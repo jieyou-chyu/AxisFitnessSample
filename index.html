@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>產品展示 (v0.01)</title>
+    <title>Axis Fitness產品</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -81,7 +81,7 @@
 </head>
 <body>
 
-<h1>產品展示</h1>
+<h1>產品列表(v0.01)</h1>
 
 <div class="category-list" id="categoryList"></div>
 <div class="subcategory-list" id="subcategoryList" style="display: none;"></div>
@@ -178,16 +178,18 @@ document.getElementById('backButton').onclick = () => {
         currentPage = 'products';
         document.getElementById('tableContainer').style.display = 'none';
         document.getElementById('productList').style.display = 'block';
+        document.getElementById('backButton').style.display = 'block'; // 返回到產品時顯示按鈕
     } else if (currentPage === 'products') {
         currentPage = 'subcategories';
         document.getElementById('productList').style.display = 'none';
         document.getElementById('subcategoryList').style.display = 'block';
+        document.getElementById('backButton').style.display = 'none'; // 返回到子類別時隱藏按鈕
     } else if (currentPage === 'subcategories') {
         currentPage = 'categories';
         document.getElementById('subcategoryList').style.display = 'none';
         document.getElementById('categoryList').style.display = 'block';
+        document.getElementById('backButton').style.display = 'none'; // 返回到類別時隱藏按鈕
     }
-    document.getElementById('backButton').style.display = 'none';
 };
 </script>
 
