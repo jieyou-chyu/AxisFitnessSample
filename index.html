@@ -8,7 +8,7 @@
 </head>
 <body>
 
-<h1>產品列表(v0.03)</h1>
+<h1>產品列表</h1>
 
 <div class="category-list" id="categoryList"></div>
 <button class="back-button" id="backButton" style="display: none;">返回</button>
@@ -93,7 +93,7 @@ function showProductDetails(product) {
     document.getElementById('productDetails').innerHTML = `
         <tr>
             <td>${product.name}</td>
-            <td><img src="${product.svg}" alt="${product.name}" style="width: 100px;"></td>
+            <td><img src="${product.svg}" alt="${product.name}" style="width: 300px;"></td>
         </tr>
     `;
     tableContainer.style.display = 'block';
