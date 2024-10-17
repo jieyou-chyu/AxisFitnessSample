@@ -129,16 +129,18 @@
                 document.getElementById('backButton').style.display = 'block';
             }
 			
-			document.getElementById('backButton').onclick = () => {
-				if (previousPage === 'subcategories') {
-					document.getElementById('productList').style.display = 'none';
-					document.getElementById('subcategoryList').style.display = 'block';
-				} else if (previousPage === 'categories') {
-					document.getElementById('subcategoryList').style.display = 'none';
-					document.getElementById('categoryList').style.display = 'block';
-				}
-				document.getElementById('backButton').style.display = 'none';
-			};			
+            document.getElementById('backButton').onclick = () => {
+                if (previousPage === 'subcategories') {
+                        document.getElementById('productList').style.display = 'none';
+                        document.getElementById('subcategoryList').style.display = 'block';
+                } else if (previousPage === 'categories') {
+                        document.getElementById('subcategoryList').style.display = 'none';
+                        document.getElementById('categoryList').style.display = 'block';
+                }
+		else {
+		    document.getElementById('backButton').style.display = 'none';
+		}
+	    };			
         })
         .catch(error => console.error('Error loading products:', error));
 </script>
