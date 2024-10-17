@@ -49,12 +49,13 @@
 <div class="product-list" id="productList" style="display: none;"></div>
 
 <div class="table-container" id="tableContainer">
+	<button class="back-button" id="backButton" style="display: none;">返回</button>
     <h2>產品詳情</h2>
     <table>
         <thead>
             <tr>
                 <th>產品名稱</th>
-                <th>產品圖示</th>
+                <th>產品條碼</th>
             </tr>
         </thead>
         <tbody id="productDetails"></tbody>
@@ -71,6 +72,8 @@
             const productList = document.getElementById('productList');
             const productDetails = document.getElementById('productDetails');
             const tableContainer = document.getElementById('tableContainer');
+			
+			let previousPage = '';
 
             // 顯示種類
             data.categories.forEach(category => {
@@ -83,6 +86,7 @@
 
             // 顯示子類別
             function showSubcategories(subcategories) {
+				previousPage = 'categories';
                 categoryList.style.display = 'none';  // 隱藏類別列表
                 subcategoryList.style.display = 'block';  // 顯示子類別列表
                 productList.style.display = 'none';  // 隱藏產品列表
@@ -99,6 +103,7 @@
 
             // 顯示產品
             function showProducts(products) {
+				previousPage = 'subcategories';
                 subcategoryList.style.display = 'none';  // 隱藏子類別列表
                 productList.style.display = 'block';  // 顯示產品列表
 
@@ -121,7 +126,19 @@
                     </tr>
                 `;
                 tableContainer.style.display = 'block'; // 顯示產品詳情
+                document.getElementById('backButton').style.display = 'block';
             }
+			
+			document.getElementById('backButton').onclick = () => {
+				if (previousPage === 'subcategories') {
+					document.getElementById('productList').style.display = 'none';
+					document.getElementById('subcategoryList').style.display = 'block';
+				} else if (previousPage === 'categories') {
+					document.getElementById('subcategoryList').style.display = 'none';
+					document.getElementById('categoryList').style.display = 'block';
+				}
+				document.getElementById('backButton').style.display = 'none';
+			};			
         })
         .catch(error => console.error('Error loading products:', error));
 </script>
