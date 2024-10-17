@@ -81,7 +81,7 @@
 </head>
 <body>
 
-<h1>產品列表(v0.01)</h1>
+<h1>產品列表(v0.02)</h1>
 
 <div class="category-list" id="categoryList"></div>
 <div class="subcategory-list" id="subcategoryList" style="display: none;"></div>
@@ -125,10 +125,10 @@ function displayCategories() {
         item.onclick = () => showSubcategories(category.subcategories);
         categoryList.appendChild(item);
     });
+    document.getElementById('backButton').style.display = 'none'; // 顯示類別時隱藏返回按鈕
 }
 
 function showSubcategories(subcategories) {
-    previousPage = currentPage;
     currentPage = 'subcategories';
     document.getElementById('categoryList').style.display = 'none';
     const subcategoryList = document.getElementById('subcategoryList');
@@ -141,10 +141,10 @@ function showSubcategories(subcategories) {
         item.onclick = () => showProducts(subcategory.products);
         subcategoryList.appendChild(item);
     });
+    document.getElementById('backButton').style.display = 'block'; // 顯示返回按鈕
 }
 
 function showProducts(products) {
-    previousPage = currentPage;
     currentPage = 'products';
     document.getElementById('subcategoryList').style.display = 'none';
     const productList = document.getElementById('productList');
@@ -157,6 +157,7 @@ function showProducts(products) {
         item.onclick = () => showProductDetails(product);
         productList.appendChild(item);
     });
+    document.getElementById('backButton').style.display = 'block'; // 確保返回按鈕顯示
 }
 
 function showProductDetails(product) {
@@ -166,11 +167,11 @@ function showProductDetails(product) {
     document.getElementById('productDetails').innerHTML = `
         <tr>
             <td>${product.name}</td>
-            <td><img src="${product.svg}" alt="${product.name}" style="width: 250px;"></td>
+            <td><img src="${product.svg}" alt="${product.name}" style="width: 100px;"></td>
         </tr>
     `;
     tableContainer.style.display = 'block';
-    document.getElementById('backButton').style.display = 'block';
+    document.getElementById('backButton').style.display = 'block'; // 確保返回按鈕顯示
 }
 
 document.getElementById('backButton').onclick = () => {
@@ -178,18 +179,18 @@ document.getElementById('backButton').onclick = () => {
         currentPage = 'products';
         document.getElementById('tableContainer').style.display = 'none';
         document.getElementById('productList').style.display = 'block';
-        document.getElementById('backButton').style.display = 'block'; // 返回到產品時顯示按鈕
     } else if (currentPage === 'products') {
         currentPage = 'subcategories';
         document.getElementById('productList').style.display = 'none';
         document.getElementById('subcategoryList').style.display = 'block';
-        document.getElementById('backButton').style.display = 'none'; // 返回到子類別時隱藏按鈕
     } else if (currentPage === 'subcategories') {
         currentPage = 'categories';
         document.getElementById('subcategoryList').style.display = 'none';
         document.getElementById('categoryList').style.display = 'block';
-        document.getElementById('backButton').style.display = 'none'; // 返回到類別時隱藏按鈕
     }
+    
+    // 更新返回按鈕的顯示狀態
+    document.getElementById('backButton').style.display = currentPage === 'categories' ? 'none' : 'block';
 };
 </script>
 
