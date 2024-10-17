@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>產品展示</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .category-list, .subcategory-list, .product-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .item {
+            cursor: pointer;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .item:hover {
+            background-color: #f0f0f0;
+        }
+        .table-container {
+            display: none;
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+<h1>產品展示</h1>
+
+<div class="category-list" id="categoryList"></div>
+<div class="subcategory-list" id="subcategoryList" style="display: none;"></div>
+<div class="product-list" id="productList" style="display: none;"></div>
+
+<div class="table-container" id="tableContainer">
+    <h2>產品詳情</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>產品名稱</th>
+                <th>產品圖示</th>
+            </tr>
+        </thead>
+        <tbody id="productDetails"></tbody>
+    </table>
+</div>
+
+<script>
+    // 加載產品資料
+    fetch('products.json')
+        .then(response => response.json())
+        .then(data => {
+            const categoryList = document.getElementById('categoryList');
+            const subcategoryList = document.getElementById('subcategoryList');
+            const productList = document.getElementById('productList');
+            const productDetails = document.getElementById('productDetails');
+            const tableContainer = document.getElementById('tableContainer');
+
+            // 顯示種類
+            data.categories.forEach(category => {
+                const item = document.createElement('div');
+                item.className = 'item';
+                item.innerText = category.name;
+                item.onclick = () => showSubcategories(category.subcategories);
+                categoryList.appendChild(item);
+            });
+
+            // 顯示子類別
+            function showSubcategories(subcategories) {
+                categoryList.style.display = 'none';  // 隱藏類別列表
+                subcategoryList.style.display = 'block';  // 顯示子類別列表
+                productList.style.display = 'none';  // 隱藏產品列表
+
+                subcategoryList.innerHTML = ''; // 清空子類別列表
+                subcategories.forEach(subcategory => {
+                    const item = document.createElement('div');
+                    item.className = 'item';
+                    item.innerText = subcategory.name;
+                    item.onclick = () => showProducts(subcategory.products);
+                    subcategoryList.appendChild(item);
+                });
+            }
+
+            // 顯示產品
+            function showProducts(products) {
+                subcategoryList.style.display = 'none';  // 隱藏子類別列表
+                productList.style.display = 'block';  // 顯示產品列表
+
+                productList.innerHTML = ''; // 清空產品列表
+                products.forEach(product => {
+                    const item = document.createElement('div');
+                    item.className = 'item';
+                    item.innerText = product.name;
+                    item.onclick = () => showProductDetails(product);
+                    productList.appendChild(item);
+                });
+            }
+
+            // 顯示產品詳情
+            function showProductDetails(product) {
+                productDetails.innerHTML = `
+                    <tr>
+                        <td>${product.name}</td>
+                        <td><img src="${product.svg}" alt="${product.name}" style="width: 100px;"></td>
+                    </tr>
+                `;
+                tableContainer.style.display = 'block'; // 顯示產品詳情
+            }
+        })
+        .catch(error => console.error('Error loading products:', error));
+</script>
+
+</body>
+</html>
