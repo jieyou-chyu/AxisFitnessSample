@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>產品展示</title>
+    <title>產品展示 (v0.01)</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -102,86 +102,93 @@
 </div>
 
 <script>
-    // 加載產品資料
-    fetch('products.json')
-        .then(response => response.json())
-        .then(data => {
-            const categoryList = document.getElementById('categoryList');
-            const subcategoryList = document.getElementById('subcategoryList');
-            const productList = document.getElementById('productList');
-            const productDetails = document.getElementById('productDetails');
-            const tableContainer = document.getElementById('tableContainer');
-			
-			let previousPage = '';
+let data;
+let currentPage = 'categories'; // 紀錄當前頁面
+let previousPage = '';
 
-            // 顯示種類
-            data.categories.forEach(category => {
-                const item = document.createElement('div');
-                item.className = 'item';
-                item.innerText = category.name;
-                item.onclick = () => showSubcategories(category.subcategories);
-                categoryList.appendChild(item);
-            });
+// 獲取 JSON 數據
+fetch('data.json')
+    .then(response => response.json())
+    .then(json => {
+        data = json;
+        displayCategories();
+    })
+    .catch(error => console.error('Error fetching data:', error));
 
-            // 顯示子類別
-            function showSubcategories(subcategories) {
-				previousPage = 'categories';
-                //categoryList.style.display = 'none';  // 隱藏類別列表
-                subcategoryList.style.display = 'block';  // 顯示子類別列表
-                productList.style.display = 'none';  // 隱藏產品列表
+function displayCategories() {
+    const categoryList = document.getElementById('categoryList');
+    categoryList.innerHTML = '';
+    data.categories.forEach(category => {
+        const item = document.createElement('div');
+        item.className = 'item';
+        item.innerText = category.name;
+        item.onclick = () => showSubcategories(category.subcategories);
+        categoryList.appendChild(item);
+    });
+}
 
-                subcategoryList.innerHTML = ''; // 清空子類別列表
-                subcategories.forEach(subcategory => {
-                    const item = document.createElement('div');
-                    item.className = 'item';
-                    item.innerText = subcategory.name;
-                    item.onclick = () => showProducts(subcategory.products);
-                    subcategoryList.appendChild(item);
-                });
-            }
+function showSubcategories(subcategories) {
+    previousPage = currentPage;
+    currentPage = 'subcategories';
+    document.getElementById('categoryList').style.display = 'none';
+    const subcategoryList = document.getElementById('subcategoryList');
+    subcategoryList.innerHTML = '';
+    subcategoryList.style.display = 'block';
+    subcategories.forEach(subcategory => {
+        const item = document.createElement('div');
+        item.className = 'item';
+        item.innerText = subcategory.name;
+        item.onclick = () => showProducts(subcategory.products);
+        subcategoryList.appendChild(item);
+    });
+}
 
-            // 顯示產品
-            function showProducts(products) {
-				previousPage = 'subcategories';
-                //subcategoryList.style.display = 'none';  // 隱藏子類別列表
-                productList.style.display = 'block';  // 顯示產品列表
+function showProducts(products) {
+    previousPage = currentPage;
+    currentPage = 'products';
+    document.getElementById('subcategoryList').style.display = 'none';
+    const productList = document.getElementById('productList');
+    productList.innerHTML = '';
+    productList.style.display = 'block';
+    products.forEach(product => {
+        const item = document.createElement('div');
+        item.className = 'item';
+        item.innerText = product.name;
+        item.onclick = () => showProductDetails(product);
+        productList.appendChild(item);
+    });
+}
 
-                productList.innerHTML = ''; // 清空產品列表
-                products.forEach(product => {
-                    const item = document.createElement('div');
-                    item.className = 'item';
-                    item.innerText = product.name;
-                    item.onclick = () => showProductDetails(product);
-                    productList.appendChild(item);
-                });
-            }
+function showProductDetails(product) {
+    currentPage = 'productDetails';
+    document.getElementById('productList').style.display = 'none';
+    const tableContainer = document.getElementById('tableContainer');
+    document.getElementById('productDetails').innerHTML = `
+        <tr>
+            <td>${product.name}</td>
+            <td><img src="${product.svg}" alt="${product.name}" style="width: 100px;"></td>
+        </tr>
+    `;
+    tableContainer.style.display = 'block';
+    document.getElementById('backButton').style.display = 'block';
+}
 
-            // 顯示產品詳情
-            function showProductDetails(product) {
-                productDetails.innerHTML = `
-                    <tr>
-                        <td>${product.name}</td>
-                        <td><img src="${product.svg}" alt="${product.name}" style="width: 100px;"></td>
-                    </tr>
-                `;
-                tableContainer.style.display = 'block'; // 顯示產品詳情
-                document.getElementById('backButton').style.display = 'block';
-            }
-			
-            document.getElementById('backButton').onclick = () => {
-                if (previousPage === 'subcategories') {
-                        document.getElementById('productList').style.display = 'none';
-                        document.getElementById('subcategoryList').style.display = 'block';
-                } else if (previousPage === 'categories') {
-                        document.getElementById('subcategoryList').style.display = 'none';
-                        document.getElementById('categoryList').style.display = 'block';
-                }
-		else {
-		    document.getElementById('backButton').style.display = 'none';
-		}
-	    };			
-        })
-        .catch(error => console.error('Error loading products:', error));
+document.getElementById('backButton').onclick = () => {
+    if (currentPage === 'productDetails') {
+        currentPage = 'products';
+        document.getElementById('tableContainer').style.display = 'none';
+        document.getElementById('productList').style.display = 'block';
+    } else if (currentPage === 'products') {
+        currentPage = 'subcategories';
+        document.getElementById('productList').style.display = 'none';
+        document.getElementById('subcategoryList').style.display = 'block';
+    } else if (currentPage === 'subcategories') {
+        currentPage = 'categories';
+        document.getElementById('subcategoryList').style.display = 'none';
+        document.getElementById('categoryList').style.display = 'block';
+    }
+    document.getElementById('backButton').style.display = 'none';
+};
 </script>
 
 </body>
