@@ -2,7 +2,7 @@ let dataStack = [];
 let currentData = null;
 
 // 載入 JSON 資料
-fetch('data.json')
+fetch('products.json')
     .then(response => response.json())
     .then(data => {
         currentData = data;
