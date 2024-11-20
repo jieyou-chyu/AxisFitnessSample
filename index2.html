@@ -35,7 +35,7 @@ let currentPage = 'categories'; // 紀錄當前頁面
 let previousPage = '';
 
 // 獲取 JSON 數據
-fetch('favorite.json')
+fetch('products.json')
     .then(response => response.json())
     .then(json => {
         data = json;
