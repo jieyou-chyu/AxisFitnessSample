@@ -9,7 +9,8 @@
 <body>
 
 <h1>產品列表</h1>
-
+    
+<div class="category-list" id="favoriteList"></div>
 <div class="category-list" id="categoryList"></div>
 <button class="back-button" id="backButton" style="display: none;">返回</button>
 <div class="subcategory-list" id="subcategoryList" style="display: none;"></div>
@@ -50,7 +51,7 @@ fetch('products.json')
     .catch(error => console.error('Error fetching data:', error));
     
 function displayFavorite() {
-    const categoryList = document.getElementById('categoryList');
+    const categoryList = document.getElementById('favoriteList');
     categoryList.innerHTML = '';
     data.categories.forEach(category => {
         const item = document.createElement('div');
