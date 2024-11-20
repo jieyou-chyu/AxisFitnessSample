@@ -3,43 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Catalog</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        .container {
-            max-width: 600px;
-            margin: auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        .back-button {
-            display: none;
-            margin-bottom: 10px;
-        }
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        li {
-            cursor: pointer;
-            padding: 5px;
-            border: 1px solid #ccc;
-            margin: 5px 0;
-            border-radius: 3px;
-        }
-        li:hover {
-            background-color: #f0f0f0;
-        }
-    </style>
+    <title>Axis Fitness產品(v0.02)</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <button class="back-button" onclick="goBack()">Back</button>
-        <ul id="product-list"></ul>
-    </div>
-    <script src="app.js"></script>
+
+<h1>產品列表</h1>
+
+<div class="category-list" id="categoryList"></div>
+<button class="back-button" id="backButton" style="display: none;">返回</button>
+<div class="subcategory-list" id="subcategoryList" style="display: none;"></div>
+<div class="product-list" id="productList" style="display: none;"></div>
+<div class="table-container" id="tableContainer">
+    <h2>產品詳情</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>產品名稱</th>
+                <th>售價</th>
+                <th>產品條碼</th>
+            </tr>
+        </thead>
+        <tbody id="productDetails"></tbody>
+    </table>
+</div>
+
+<script>
+let data;
+let currentPage = 'categories'; // 紀錄當前頁面
+let previousPage = '';
+
+// 獲取 JSON 數據
+fetch('favorite.json')
+    .then(response => response.json())
+    .then(json => {
+        data = json;
+        displayCategories();
+    })
+    .catch(error => console.error('Error fetching data:', error));
+fetch('products.json')
+    .then(response => response.json())
+    .then(json => {
+        data = json;
+        displayCategories();
+    })
+    .catch(error => console.error('Error fetching data:', error));
+
+function displayCategories() {
+    const categoryList = document.getElementById('categoryList');
+    categoryList.innerHTML = '';
+    data.categories.forEach(category => {
+        const item = document.createElement('div');
+        item.className = 'item';
+        item.innerText = category.name;
+        item.onclick = () => showSubcategories(category.subcategories);
+        categoryList.appendChild(item);
+    });
+    document.getElementById('backButton').style.display = 'none'; // 顯示類別時隱藏返回按鈕
+}
+
+function showSubcategories(subcategories) {
+    currentPage = 'subcategories';
+    document.getElementById('categoryList').style.display = 'none';
+    const subcategoryList = document.getElementById('subcategoryList');
+    subcategoryList.innerHTML = '';
+    subcategoryList.style.display = 'block';
+    subcategories.forEach(subcategory => {
+        const item = document.createElement('div');
+        item.className = 'item';
+        item.innerText = subcategory.name;
+        item.onclick = () => showProducts(subcategory.products);
+        subcategoryList.appendChild(item);
+    });
+    document.getElementById('backButton').style.display = 'block'; // 顯示返回按鈕
+}
+
+function showProducts(products) {
+    currentPage = 'products';
+    document.getElementById('subcategoryList').style.display = 'none';
+    const productList = document.getElementById('productList');
+    productList.innerHTML = '';
+    productList.style.display = 'block';
+    products.forEach(product => {
+        const item = document.createElement('div');
+        item.className = 'item';
+        item.innerText = product.name;
+        item.onclick = () => showProductDetails(product);
+        productList.appendChild(item);
+    });
+    document.getElementById('backButton').style.display = 'block'; // 確保返回按鈕顯示
+}
+
+function showProductDetails(product) {
+    currentPage = 'productDetails';
+    document.getElementById('productList').style.display = 'none';
+    const tableContainer = document.getElementById('tableContainer');
+    document.getElementById('productDetails').innerHTML = `
+        <tr>
+            <td>${product.name}</td>
+            <td>${product.price}</td>
+            <td><img src="${product.svg}" alt="${product.name}" style="width: 300px;"></td>
+        </tr>
+    `;
+    tableContainer.style.display = 'block';
+    document.getElementById('backButton').style.display = 'block'; // 確保返回按鈕顯示
+}
+
+document.getElementById('backButton').onclick = () => {
+    if (currentPage === 'productDetails') {
+        currentPage = 'products';
+        document.getElementById('tableContainer').style.display = 'none';
+        document.getElementById('productList').style.display = 'block';
+    } else if (currentPage === 'products') {
+        currentPage = 'subcategories';
+        document.getElementById('productList').style.display = 'none';
+        document.getElementById('subcategoryList').style.display = 'block';
+    } else if (currentPage === 'subcategories') {
+        currentPage = 'categories';
+        document.getElementById('subcategoryList').style.display = 'none';
+        document.getElementById('categoryList').style.display = 'block';
+    }
+    
+    // 更新返回按鈕的顯示狀態
+    document.getElementById('backButton').style.display = currentPage === 'categories' ? 'none' : 'block';
+};
+</script>
+
 </body>
 </html>
