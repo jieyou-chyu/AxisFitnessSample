@@ -42,13 +42,13 @@ fetch('favorite.json')
         displayFavorite();
     })
     .catch(error => console.error('Error fetching data:', error));
-fetch('products.json')
-    .then(response => response.json())
-    .then(json => {
-        data = json;
-        displayCategories();
-    })
-    .catch(error => console.error('Error fetching data:', error));
+//fetch('products.json')
+//    .then(response => response.json())
+//    .then(json => {
+//        data = json;
+//        displayCategories();
+//    })
+//    .catch(error => console.error('Error fetching data:', error));
     
 function displayFavorite() {
     const categoryList = document.getElementById('favoriteList');
