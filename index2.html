@@ -68,16 +68,18 @@ function showFavoriteDetail(products) {
     const productList = document.getElementById('tableContainer');
     productList.innerHTML = '';
     productList.style.display = 'block';
+    htmString = ''
     products.forEach(product => {
-        document.getElementById('tableContainer').innerHTML = `
+        htmString = `
             <tr>
                 <td>${product.name}</td>
                 <td>${product.price}</td>
                 <td><img src="${product.svg}" alt="${product.name}" style="width: 300px;"></td>
             </tr>
         `;
-        tableContainer.style.display = 'block';
     });
+    document.getElementById('tableContainer').innerHTML = htmString;
+    tableContainer.style.display = 'block';
     document.getElementById('backButton').style.display = 'block'; // 確保返回按鈕顯示
 }
 
