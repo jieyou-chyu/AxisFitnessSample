@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商品估價單</title>
+    <style>
+        /* 基本頁面設置 */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #4a90e2;
+            margin-bottom: 30px;
+        }
+
+        /* 表格樣式 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #4a90e2;
+            color: #fff;
+        }
+
+        td select,
+        td input {
+            width: 100px;
+            padding: 8px;
+            font-size: 14px;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        td input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        td input[type="number"]::-webkit-outer-spin-button,
+        td input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* 按鈕樣式 */
+        button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #4a90e2;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #357ab7;
+        }
+
+        /* 顯示最終價格的樣式 */
+        #final-price {
+            font-size: 1.5em;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e0f7fa;
+            border-radius: 8px;
+        }
+
+        /* 折扣輸入框樣式 */
+        input[type="number"] {
+            width: 120px;
+            margin-right: 10px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        label {
+            font-size: 16px;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>商品估價單</h1>
+        
+        <!-- 商品選擇表格 -->
+        <table>
+            <thead>
+                <tr>
+                    <th>商品名稱</th>
+                    <th>單價</th>
+                    <th>數量</th>
+                    <th>總價</th>
+                </tr>
+            </thead>
+            <tbody id="product-list">
+                <tr>
+                    <td>
+                        <select class="product-name">
+                            <option value="Item A" data-price="100">商品 A</option>
+                            <option value="Item B" data-price="150">商品 B</option>
+                            <option value="Item C" data-price="200">商品 C</option>
+                        </select>
+                    </td>
+                    <td><span class="product-price">100</span></td>
+                    <td><input type="number" class="quantity" value="1" min="1" /></td>
+                    <td><span class="total-price">100</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- 折扣輸入 -->
+        <div class="form-group">
+            <label for="discount">折扣 (按總數量計算): </label>
+            <input type="number" id="discount" value="0" min="0" max="100" disabled/>
+        </div>
+
+        <!-- 顯示最終價格 -->
+        <div id="final-price">總價: $100</div>
+
+        <!-- 計算按鈕 -->
+        <button onclick="calculateTotal()">計算總價</button>
+    </div>
+
+    <script>
+        function calculateTotal() {
+            let totalPrice = 0;
+
+            // 取得所有商品行
+            const productRows = document.querySelectorAll("#product-list tr");
+            
+            // 計算所有商品的總價
+            productRows.forEach(row => {
+                const price = parseFloat(row.querySelector(".product-price").innerText);
+                const quantity = parseInt(row.querySelector(".quantity").value);
+                const total = price * quantity;
+                row.querySelector(".total-price").innerText = total;
+                totalPrice += total;
+            });
+
+            // 根據數量套用折扣
+            let discountRate = 1;  // 預設不打折
+
+            const allQuantities = Array.from(document.querySelectorAll(".quantity")).map(input => parseInt(input.value));
+            const totalQuantity = allQuantities.reduce((acc, curr) => acc + curr, 0);
+
+            if (totalQuantity < 40) {
+                discountRate = 0.4;  // 4折
+            } else if (totalQuantity < 80) {
+                discountRate = 0.5;  // 5折
+            } else if (totalQuantity < 120) {
+                discountRate = 0.6;  // 6折
+            }
+
+            // 計算折扣金額
+            const discountAmount = totalPrice * (1 - discountRate);
+            const finalPrice = totalPrice - discountAmount;
+
+            // 顯示最終價錢
+            document.getElementById("final-price").innerText = "總價: $" + finalPrice.toFixed(2);
+        }
+
+        // 監聽數量變動事件
+        document.querySelector("#product-list").addEventListener("input", function() {
+            calculateTotal();
+        });
+
+        // 頁面加載後執行一次計算
+        window.onload = calculateTotal;
+    </script>
+
+</body>
+</html>
