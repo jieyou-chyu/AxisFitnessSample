@@ -154,7 +154,7 @@
                 </tr>
             </thead>
             <tbody id="product-list">
-                <!-- 商品行動態生成 -->
+                <!-- 初始商品行 -->
             </tbody>
         </table>
 
@@ -174,13 +174,14 @@
             { id: 'Item C', name: '商品 C', price: 200 }
         ];
 
-        // 初始化商品列
+        // 預設商品行
+        let productCount = 0;
+
+        // 初始化商品列表
         function initProductList() {
             const productList = document.getElementById('product-list');
             productList.innerHTML = ''; // 清空現有的商品列
-            productsData.forEach((product, index) => {
-                addProductRow(product, index);
-            });
+            addProductRow(productsData[0], productCount); // 預設顯示商品 A
         }
 
         // 添加商品行
@@ -217,14 +218,17 @@
 
         // 添加一個新的商品行
         function addProduct() {
-            const product = productsData[0]; // 使用預設商品A
-            addProductRow(product, document.querySelectorAll('#product-list tr').length);
+            const product = productsData[0]; // 預設商品A
+            productCount++;
+            addProductRow(product, productCount);
         }
 
+        // 計算總價
         function calculateTotal() {
             let totalPrice = 0;
             let totalQuantity = 0;
 
+            // 遍歷所有商品行
             const productRows = document.querySelectorAll('#product-list tr');
             productRows.forEach(row => {
                 const price = parseFloat(row.querySelector('.product-price').value);
@@ -236,6 +240,7 @@
                 totalQuantity += quantity;
             });
 
+            // 顯示總價
             document.getElementById('final-price').innerText = `總價: $${totalPrice.toFixed(2)} (數量: ${totalQuantity})`;
         }
 
