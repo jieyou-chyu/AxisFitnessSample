@@ -118,6 +118,23 @@
             margin-right: 10px;
             font-weight: bold;
         }
+
+        /* 額外商品按鈕 */
+        .add-product {
+            margin-top: 10px;
+            display: inline-block;
+            padding: 8px 16px;
+            font-size: 14px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .add-product:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
@@ -126,89 +143,104 @@
         <h1>商品估價單</h1>
         
         <!-- 商品選擇表格 -->
-        <table>
+        <table id="product-table">
             <thead>
                 <tr>
                     <th>商品名稱</th>
                     <th>單價</th>
                     <th>數量</th>
                     <th>總價</th>
+                    <th>操作</th>
                 </tr>
             </thead>
             <tbody id="product-list">
-                <tr>
-                    <td>
-                        <select class="product-name">
-                            <option value="Item A" data-price="100">商品 A</option>
-                            <option value="Item B" data-price="150">商品 B</option>
-                            <option value="Item C" data-price="200">商品 C</option>
-                        </select>
-                    </td>
-                    <td><span class="product-price">100</span></td>
-                    <td><input type="number" class="quantity" value="1" min="1" /></td>
-                    <td><span class="total-price">100</span></td>
-                </tr>
+                <!-- 商品行動態生成 -->
             </tbody>
         </table>
 
-        <!-- 折扣輸入 -->
-        <div class="form-group">
-            <label for="discount">折扣 (按總數量計算): </label>
-            <input type="number" id="discount" value="0" min="0" max="100" disabled/>
-        </div>
-
         <!-- 顯示最終價格 -->
-        <div id="final-price">總價: $100</div>
+        <div id="final-price">總價: $0</div>
 
-        <!-- 計算按鈕 -->
-        <button onclick="calculateTotal()">計算總價</button>
+        <div class="form-group">
+            <button class="add-product" onclick="addProduct()">添加商品</button>
+        </div>
     </div>
 
     <script>
-        function calculateTotal() {
-            let totalPrice = 0;
+        // 假設商品資料是來自於一個外部的 JSON
+        const productsData = [
+            { id: 'Item A', name: '商品 A', price: 100 },
+            { id: 'Item B', name: '商品 B', price: 150 },
+            { id: 'Item C', name: '商品 C', price: 200 }
+        ];
 
-            // 取得所有商品行
-            const productRows = document.querySelectorAll("#product-list tr");
-            
-            // 計算所有商品的總價
-            productRows.forEach(row => {
-                const price = parseFloat(row.querySelector(".product-price").innerText);
-                const quantity = parseInt(row.querySelector(".quantity").value);
-                const total = price * quantity;
-                row.querySelector(".total-price").innerText = total;
-                totalPrice += total;
+        // 初始化商品列
+        function initProductList() {
+            const productList = document.getElementById('product-list');
+            productList.innerHTML = ''; // 清空現有的商品列
+            productsData.forEach((product, index) => {
+                addProductRow(product, index);
             });
-
-            // 根據數量套用折扣
-            let discountRate = 1;  // 預設不打折
-
-            const allQuantities = Array.from(document.querySelectorAll(".quantity")).map(input => parseInt(input.value));
-            const totalQuantity = allQuantities.reduce((acc, curr) => acc + curr, 0);
-
-            if (totalQuantity < 40) {
-                discountRate = 0.4;  // 4折
-            } else if (totalQuantity < 80) {
-                discountRate = 0.5;  // 5折
-            } else if (totalQuantity < 120) {
-                discountRate = 0.6;  // 6折
-            }
-
-            // 計算折扣金額
-            const discountAmount = totalPrice * (1 - discountRate);
-            const finalPrice = totalPrice - discountAmount;
-
-            // 顯示最終價錢
-            document.getElementById("final-price").innerText = "總價: $" + finalPrice.toFixed(2);
         }
 
-        // 監聽數量變動事件
-        document.querySelector("#product-list").addEventListener("input", function() {
-            calculateTotal();
-        });
+        // 添加商品行
+        function addProductRow(product, index) {
+            const row = document.createElement('tr');
+            row.dataset.index = index;
 
-        // 頁面加載後執行一次計算
-        window.onload = calculateTotal;
+            row.innerHTML = `
+                <td>
+                    <select class="product-name">
+                        ${productsData.map(p => `<option value="${p.id}" ${p.id === product.id ? 'selected' : ''}>${p.name}</option>`).join('')}
+                    </select>
+                </td>
+                <td><input type="number" class="product-price" value="${product.price}" /></td>
+                <td><input type="number" class="quantity" value="1" min="1" /></td>
+                <td><span class="total-price">${product.price}</span></td>
+                <td><button class="remove-product" onclick="removeProductRow(this)">移除</button></td>
+            `;
+
+            // 將新行加入到表格
+            document.getElementById('product-list').appendChild(row);
+            // 監聽商品數量和單價的改變
+            row.querySelector('.quantity').addEventListener('input', calculateTotal);
+            row.querySelector('.product-price').addEventListener('input', calculateTotal);
+            row.querySelector('.product-name').addEventListener('change', calculateTotal);
+        }
+
+        // 移除商品行
+        function removeProductRow(button) {
+            const row = button.closest('tr');
+            row.remove();
+            calculateTotal();
+        }
+
+        // 添加一個新的商品行
+        function addProduct() {
+            const product = productsData[0]; // 使用預設商品A
+            addProductRow(product, document.querySelectorAll('#product-list tr').length);
+        }
+
+        function calculateTotal() {
+            let totalPrice = 0;
+            let totalQuantity = 0;
+
+            const productRows = document.querySelectorAll('#product-list tr');
+            productRows.forEach(row => {
+                const price = parseFloat(row.querySelector('.product-price').value);
+                const quantity = parseInt(row.querySelector('.quantity').value);
+                const total = price * quantity;
+                row.querySelector('.total-price').innerText = total;
+
+                totalPrice += total;
+                totalQuantity += quantity;
+            });
+
+            document.getElementById('final-price').innerText = `總價: $${totalPrice.toFixed(2)} (數量: ${totalQuantity})`;
+        }
+
+        // 頁面加載後初始化商品列表
+        window.onload = initProductList;
     </script>
 
 </body>
