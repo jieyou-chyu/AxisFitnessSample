@@ -29,6 +29,19 @@
             margin-bottom: 30px;
         }
 
+        .description {
+            font-size: 18px;
+            font-family: 'Arial', sans-serif;
+            color: #555555;
+            margin-bottom: 30px;
+            text-align: left;
+            line-height: 1.6;
+            background-color: #dae2ea;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
         /* 表格樣式 */
         table {
             width: 100%;
@@ -130,7 +143,16 @@
 
     <div class="container">
         <h1>課程結算表</h1>
-        
+        <div class="description">
+            <p>請根據您的需求選擇課程並輸入數量。我們將根據單價、數量及權重計算總金額。規則如下：</p>
+            <ul>
+                <li>總時數&lt;40. 提成40%</li>
+                <li>40&le;總時數&lt;80. 提成50%</li>
+                <li>80&le;總時數&lt;80. 提成60%</li>
+                <li>120&le;總時數. 提成65%</li>
+            </ul>
+        </div>
+
         <table id="product-table">
             <thead>
                 <tr>
