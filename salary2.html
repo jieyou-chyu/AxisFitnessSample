@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>課程結算表</title>
+    <style>
+        /* 基本頁面設置 */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #4a90e2;
+            margin-bottom: 30px;
+        }
+
+        .description {
+            font-size: 18px;
+            color: #555555;
+            margin-bottom: 30px;
+            text-align: left;
+            line-height: 1.6;
+            background-color: #dae2ea;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #4a90e2;
+            color: #fff;
+        }
+
+        td input {
+            width: 60px;
+            padding: 8px;
+            font-size: 14px;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        #final-price, #final-result {
+            font-size: 1.5em;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e0f7fa;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>課程結算表</h1>
+        <div class="description">
+            <p>請輸入課程數量，我們將根據單價計算總金額與薪資比例。</p>
+        </div>
+
+        <table id="product-table">
+            <thead>
+                <tr>
+                    <th>課程名稱</th>
+                    <th>單價</th>
+                    <th>數量</th>
+                    <th>總價</th>
+                </tr>
+            </thead>
+            <tbody id="product-list">
+                <!-- 課程列表 -->
+            </tbody>
+        </table>
+
+        <!-- 顯示最終結果 -->
+        <div id="final-price">
+            總時數: 0 | 總金額: $0
+        </div>
+        <div id="final-result">
+            薪資比例: 0% | 薪資: $0
+        </div>
+    </div>
+
+    <script>
+        // 商品資料
+        const productsData = [
+            { id: 'Item1165', name: '(65折)1對1高級教練60min', price: 2080, weight: 1 },
+            { id: 'Item1170', name: '(7折)1對1高級教練60min', price: 2240, weight: 1 },
+            { id: 'Item1175', name: '(75折)1對1高級教練60min', price: 2400, weight: 1 },
+            { id: 'Item1265', name: '(65折)1對2高級教練60min', price: 1300, weight: 2 },
+            { id: 'Item1270', name: '(7折)1對2高級教練60min', price: 1400, weight: 2 },
+            { id: 'Item1365', name: '(65折)1對3高級教練60min', price: 1040, weight: 3 },
+            { id: 'Item1370', name: '(7折)1對3高級教練60min', price: 1120, weight: 3 },
+            { id: 'Item1470', name: '(7折)4人團體高級教練60min', price: 840, weight: 4 },
+            { id: 'Item1570', name: '(7折)5人團體高級教練60min', price: 840, weight: 5 },
+            { id: 'Item1670', name: '(7折)6人團體高級教練60min', price: 840, weight: 6 }
+        ];
+
+        // 初始化課程列表
+        function initProductList() {
+            const productList = document.getElementById('product-list');
+            productList.innerHTML = productsData.map(product => `
+                <tr>
+                    <td>${product.name}</td>
+                    <td>${product.price}</td>
+                    <td><input type="number" class="quantity" data-id="${product.id}" value="0" min="0" /></td>
+                    <td class="total-price" data-id="${product.id}">0</td>
+                </tr>
+            `).join('');
+            document.querySelectorAll('.quantity').forEach(input => {
+                input.addEventListener('input', calculateTotal);
+            });
+        }
+
+        // 計算總價與薪資
+        function calculateTotal() {
+            let totalPrice = 0;
+            let totalQuantity = 0;
+
+            document.querySelectorAll('.quantity').forEach(input => {
+                const productId = input.dataset.id;
+                const product = productsData.find(p => p.id === productId);
+                const quantity = parseInt(input.value) || 0;
+
+                const productTotal = quantity * product.price * product.weight;
+                document.querySelector(`.total-price[data-id="${productId}"]`).textContent = productTotal;
+
+                totalPrice += productTotal;
+                totalQuantity += quantity;
+            });
+
+            let percent = 0;
+            if (totalQuantity < 40) percent = 40;
+            else if (totalQuantity < 80) percent = 50;
+            else if (totalQuantity < 120) percent = 60;
+            else percent = 65;
+
+            const finalSalary = Math.floor(totalPrice * (percent / 100));
+
+            document.getElementById('final-price').innerText = `總時數: ${totalQuantity} | 總金額: $${Math.floor(totalPrice)}`;
+            document.getElementById('final-result').innerText = `薪資比例: ${percent}% | 薪資: $${finalSalary}`;
+        }
+
+        // 初始化頁面
+        window.onload = initProductList;
+    </script>
+
+</body>
+</html>
