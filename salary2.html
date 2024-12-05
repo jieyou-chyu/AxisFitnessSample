@@ -40,6 +40,34 @@
             border-radius: 8px;
         }
 
+        .category-toggle {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex: 1; /* 讓 category 占用可用空間並且左對齊 */
+            padding: 10px 20px;
+            background-color: #007bff; /* 藍色背景 */
+            color: white; /* 白色字體 */
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center; /* 讓 category 文字靠左對齊 */
+            text-decoration: none;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .category-toggle:hover {
+            background-color: #0056b3; /* 滑鼠懸停時變為深藍色 */
+            transform: scale(1.05); /* 略微放大 */
+        }
+
+        .category-toggle:focus {
+            outline: none; /* 移除聚焦邊框 */
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* 添加聚焦時的陰影 */
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -85,67 +113,127 @@
     <div class="container">
         <h1>課程結算表</h1>
         <div class="description">
-            <p>請輸入課程數量，我們將根據單價計算總金額與薪資比例。</p>
+            <p>請根據您的需求選擇課程並輸入堂數。我們將根據單價、數量及權重計算總金額。規則如下：</p>
+            <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; text-align: left;">
+                <thead>
+                    <tr>
+                        <th>總堂數範圍</th>
+                        <th>提成百分比</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="background-color: #FFDDC1;">
+                        <td>總堂數 &le; 40</td>
+                        <td>提成 40%</td>
+                    </tr>
+                    <tr style="background-color: #FFEB99;">
+                        <td>40 &lt; 總堂數 &le; 80</td>
+                        <td>提成 50%</td>
+                    </tr>
+                    <tr style="background-color: #D4EFDF;">
+                        <td>80 &lt; 總堂數 &le; 120</td>
+                        <td>提成 60%</td>
+                    </tr>
+                    <tr style="background-color: #A9DFBF;">
+                        <td>120 &lt; 總堂數</td>
+                        <td>提成 65%</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-
-        <table id="product-table">
-            <thead>
-                <tr>
-                    <th>課程名稱</th>
-                    <th>單價</th>
-                    <th>數量</th>
-                    <th>總價</th>
-                </tr>
-            </thead>
-            <tbody id="product-list">
-                <!-- 課程列表 -->
-            </tbody>
-        </table>
 
         <!-- 顯示最終結果 -->
         <div id="final-price">
-            總時數: 0 | 總金額: $0
+            總堂數: 0 | 總金額: $0
         </div>
         <div id="final-result">
             薪資比例: 0% | 薪資: $0
         </div>
+        <div id="courses-list">
+        </div>
+
     </div>
 
     <script>
         // 商品資料
         const productsData = [
-            { id: 'Item1165', name: '(65折)1對1高級教練60min', price: 2080, weight: 1 },
-            { id: 'Item1170', name: '(7折)1對1高級教練60min', price: 2240, weight: 1 },
-            { id: 'Item1175', name: '(75折)1對1高級教練60min', price: 2400, weight: 1 },
-            { id: 'Item1265', name: '(65折)1對2高級教練60min', price: 1300, weight: 2 },
-            { id: 'Item1270', name: '(7折)1對2高級教練60min', price: 1400, weight: 2 },
-            { id: 'Item1365', name: '(65折)1對3高級教練60min', price: 1040, weight: 3 },
-            { id: 'Item1370', name: '(7折)1對3高級教練60min', price: 1120, weight: 3 },
-            { id: 'Item1470', name: '(7折)4人團體高級教練60min', price: 840, weight: 4 },
-            { id: 'Item1570', name: '(7折)5人團體高級教練60min', price: 840, weight: 5 },
-            { id: 'Item1670', name: '(7折)6人團體高級教練60min', price: 840, weight: 6 }
+            { id: 'Item1165', category: '1對1課程', name: '(65折)1對1高級教練60min', price: 2080, weight: 1 },
+            { id: 'Item1170', category: '1對1課程', name: '(7折)1對1高級教練60min', price: 2240, weight: 1 },
+            { id: 'Item1175', category: '1對1課程', name: '(75折)1對1高級教練60min', price: 2400, weight: 1 },
+            { id: 'Item1265', category: '1對2課程', name: '(65折)1對2高級教練60min', price: 1300, weight: 2 },
+            { id: 'Item1270', category: '1對2課程', name: '(7折)1對2高級教練60min', price: 1400, weight: 2 },
+            { id: 'Item1365', category: '1對3課程', name: '(65折)1對3高級教練60min', price: 1040, weight: 3 },
+            { id: 'Item1370', category: '1對3課程', name: '(7折)1對3高級教練60min', price: 1120, weight: 3 },
+            { id: 'Item1470', category: '團體課程', name: '(7折)4人團體高級教練60min', price: 840, weight: 4 },
+            { id: 'Item1570', category: '團體課程', name: '(7折)5人團體高級教練60min', price: 840, weight: 5 },
+            { id: 'Item1670', category: '團體課程', name: '(7折)6人團體高級教練60min', price: 840, weight: 6 }
         ];
 
         // 初始化課程列表
         function initProductList() {
-            const productList = document.getElementById('product-list');
-            productList.innerHTML = productsData.map(product => `
-                <tr>
-                    <td>${product.name}</td>
-                    <td>${product.price}</td>
-                    <td><input type="number" class="quantity" data-id="${product.id}" value="0" min="0" /></td>
-                    <td class="total-price" data-id="${product.id}">0</td>
-                </tr>
-            `).join('');
-            document.querySelectorAll('.quantity').forEach(input => {
-                input.addEventListener('input', calculateTotal);
+        
+        // 取得所有不同的類別
+        const categories = [...new Set(productsData.map(product => product.category))];
+        
+        // 顯示每個類別下的課程
+        const coursesList = document.getElementById('courses-list');
+        coursesList.innerHTML = categories.map(category => `
+            <div class="category-container">
+                <h3 class="category-toggle" data-category="${category}">
+                    ${category} <span class="category-quantity" id="quantity-${category}">0</span>
+                </h3>
+            </div>
+            <div class="category" data-category="${category}" style="display: none;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>課程名稱</th>
+                            <th>單價</th>
+                            <th>堂數</th>
+                            <th>總價</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${productsData.filter(product => product.category === category).map(product => `
+                            <tr>
+                                <td>${product.name}</td>
+                                <td>${product.price}</td>
+                                <td><input type="number" class="quantity" data-id="${product.id}" value="0" min="0" /></td>
+                                <td class="total-price" data-id="${product.id}">0</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        `).join('');
+
+        // 添加事件監聽器
+        document.querySelectorAll('.category-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                const category = this.getAttribute('data-category');
+                const categoryDiv = document.querySelector(`.category[data-category="${category}"]`);
+            
+                // 切換顯示/隱藏
+                if (categoryDiv.style.display === 'none' || categoryDiv.style.display === '') {
+                    categoryDiv.style.display = 'block';
+                } else {
+                    categoryDiv.style.display = 'none';
+                }
             });
-        }
+        });
+
+        document.querySelectorAll('.quantity').forEach(input => {
+            input.addEventListener('input', calculateTotal);
+        });
+    }
 
         // 計算總價與薪資
         function calculateTotal() {
             let totalPrice = 0;
             let totalQuantity = 0;
+
+            // 用於存儲每個類別的總數量
+            const categoryQuantities = {};
 
             document.querySelectorAll('.quantity').forEach(input => {
                 const productId = input.dataset.id;
@@ -157,20 +245,53 @@
 
                 totalPrice += productTotal;
                 totalQuantity += quantity;
+
+                // 累加每個類別的數量
+                if (!categoryQuantities[product.category]) {
+                    categoryQuantities[product.category] = 0;
+                }
+                categoryQuantities[product.category] += quantity;
             });
 
+            // 更新每個類別的數量顯示
+            for (const category in categoryQuantities) {
+                const categoryQuantityElement = document.getElementById(`quantity-${category}`);
+                
+                categoryQuantityElement.textContent = categoryQuantities[category];
+                if(categoryQuantities[category] > 0)
+                {
+                    categoryQuantityElement.textContent += '(' + Math.round(categoryQuantities[category]/totalQuantity*100) + '%)' ;
+                }
+            }
+
             let percent = 0;
-            if (totalQuantity < 40) percent = 40;
-            else if (totalQuantity < 80) percent = 50;
-            else if (totalQuantity < 120) percent = 60;
-            else percent = 65;
+            // 判斷總堂數對應的顏色與薪資比例
+            if (totalQuantity <= 40) {
+                percent = 40;
+                backgroundColor = '#FFDDC1'; // light pink
+            } else if (totalQuantity <= 80) {
+                percent = 50;
+                backgroundColor = '#FFEB99'; // light yellow
+            } else if (totalQuantity <= 120) {
+                percent = 60;
+                backgroundColor = '#D4EFDF'; // light green
+            } else {
+                percent = 65;
+                backgroundColor = '#A9DFBF'; // green
+            }            
 
             const finalSalary = Math.floor(totalPrice * (percent / 100));
+            // 更新總堂數與總金額顏色
+            const finalPriceElement = document.getElementById('final-price');
+            finalPriceElement.innerText = `總堂數: ${totalQuantity} | 總金額: $${Math.floor(totalPrice)}`;
+            finalPriceElement.style.backgroundColor = backgroundColor; // Update background color
 
-            document.getElementById('final-price').innerText = `總時數: ${totalQuantity} | 總金額: $${Math.floor(totalPrice)}`;
-            document.getElementById('final-result').innerText = `薪資比例: ${percent}% | 薪資: $${finalSalary}`;
+            // 更新薪資比例與薪資顏色
+            const finalResultElement = document.getElementById('final-result');
+            finalResultElement.innerText = `薪資比例: ${percent}% | 薪資: $${finalSalary}`;
+            finalResultElement.style.backgroundColor = backgroundColor; // Update background color
+
         }
-
         // 初始化頁面
         window.onload = initProductList;
     </script>
