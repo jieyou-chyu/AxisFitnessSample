@@ -7,7 +7,7 @@ import barcode
 from barcode.writer import ImageWriter
 
 # CSV 檔案路徑
-CSV_FILE = "data/products.csv"  # CSV 檔案路徑
+CSV_FILE = "products.csv"  # CSV 檔案路徑
 # header category,subcategory,product,price,svgpath
 
 # SVG 檔案存放目錄
@@ -26,17 +26,19 @@ def read_csv_barcodes(csv_file):
         reader = csv.DictReader(f)
         return {row['svgpath'] for row in reader}
 
-def generate_barcodeEAN13_svg(barcode, output_folder):
-    print(f"generate barcode: {barcode}")
-    ean = barcode.EAN13(barcode)
-    file_path = os.path.join(output_folder, f"{barcode}")
+def generate_barcodeEAN13_svg(code, output_folder):
+    print(f"generate barcode: {code} to {output_folder}")
+    ean = barcode.EAN13(code)
+    file_path = os.path.join(output_folder, f"{code}")
+    print(f"generate barcode: save path{file_path}")
     ean.save(file_path)
 
-def generate_barcodeCode128_svg(barcode, output_folder):
-    print(f"generate barcode: {barcode}")
-    code = barcode.Code128(barcode)
-    file_path = os.path.join(output_folder, f"{barcode}")
-    code.save(file_path)
+def generate_barcodeCode128_svg(code, output_folder):
+    print(f"generate barcode: {code} to {output_folder}")
+    code128 = barcode.Code128(code)
+    file_path = os.path.join(output_folder, f"{code}")
+    print(f"generate barcode: save path{file_path}")
+    code128.save(file_path)
 
 def main():
     existing_barcodes = get_existing_barcodes()
@@ -45,11 +47,13 @@ def main():
     new_barcodes = csv_barcodes - existing_barcodes
     if not os.path.exists(SVG_FOLDER):
         os.makedirs(SVG_FOLDER)
-    for barcode in new_barcodes:
-    if len(barcode) == 13:
-        generate_barcodeEAN13_svg(barcode, SVG_FOLDER)
-    else:
-        generate_barcodeCode128_svg(barcode, SVG_FOLDER)
+    for code in new_barcodes:
+        print(code.strip())
+        print(len(code.strip()))
+        if len(code.strip()) == 13:
+            generate_barcodeEAN13_svg(code, SVG_FOLDER)
+        else:
+            generate_barcodeCode128_svg(code, SVG_FOLDER)
     print(f"Generated {len(new_barcodes)} new SVG files.")
 
 if __name__ == "__main__":
