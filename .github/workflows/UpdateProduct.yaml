@@ -3,7 +3,7 @@ name: Update SVG from CSV
 on:
   push:
     paths:
-      - "products.csv"
+      - "__products.csv"
 
 jobs:
   update-svg:
