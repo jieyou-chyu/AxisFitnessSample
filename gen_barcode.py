@@ -46,10 +46,10 @@ def main():
     if not os.path.exists(SVG_FOLDER):
         os.makedirs(SVG_FOLDER)
     for barcode in new_barcodes:
-		if len(barcode) == 13:
-			generate_barcodeEAN13_svg(barcode, SVG_FOLDER)
-		else:
-			generate_barcodeCode128_svg(barcode, SVG_FOLDER)
+    if len(barcode) == 13:
+        generate_barcodeEAN13_svg(barcode, SVG_FOLDER)
+    else:
+        generate_barcodeCode128_svg(barcode, SVG_FOLDER)
     print(f"Generated {len(new_barcodes)} new SVG files.")
 
 if __name__ == "__main__":
