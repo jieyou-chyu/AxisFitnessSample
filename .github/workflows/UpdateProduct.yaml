@@ -1,0 +1,49 @@
+name: Update SVG from CSV
+
+on:
+  push:
+    paths:
+      - "products.csv"
+
+jobs:
+  update-svg:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout the repository
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # Set up Python
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install python-barcode Pillow
+
+    # Run Python script to process CSV and generate SVGs
+    - name: Generate SVGs from CSV
+      id: generate_svgs
+      run: |
+        python gen_barcode.py
+      env:
+        GITHUB_WORKSPACE: ${{ github.workspace }} # 傳遞工作空間路徑        
+        
+    # Run Python script to process CSV and generate SVGs
+    - name: Generate SVGs from CSV
+      id: generate_Productjson
+      run: |
+        python csv_to_json.py
+      env:
+        GITHUB_WORKSPACE: ${{ github.workspace }} # 傳遞工作空間路徑        
+
+    - name: Commit and push changes
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: "Automated commit on $(date): update SVG files ${{ github.event.repository.updated_at}}"
+        branch: main
+        commit_user_name: GitHub Actions
+        commit_user_email: jieyou.chyu@gmail.com 
