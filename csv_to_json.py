@@ -3,7 +3,11 @@ import json
 
 # 定義輸入和輸出文件名
 input_csv_file = 'products.csv'
+<<<<<<< HEAD
 output_json_file = 'products.json'
+=======
+output_json_file = 'products_test.json'
+>>>>>>> f8a1fe1453ed8776f17c176ad20fd691cc5dfeef
 
 # 創建一個空字典以儲存結構化數據
 data = {
@@ -18,7 +22,10 @@ with open(input_csv_file, mode='r', encoding='utf-8-sig') as csvfile:
         category = row['category'].strip()
         subcategory = row['subcategory'].strip()
         product = row['product'].strip()
+<<<<<<< HEAD
         price = row['price'].strip()
+=======
+>>>>>>> f8a1fe1453ed8776f17c176ad20fd691cc5dfeef
         svgpath = row['svgpath'].strip()
 
         # 查找或創建類別
@@ -34,7 +41,11 @@ with open(input_csv_file, mode='r', encoding='utf-8-sig') as csvfile:
             category_found["subcategories"].append(subcategory_found)
 
         # 添加產品
+<<<<<<< HEAD
         subcategory_found["products"].append({"name": product, "price": price, "svg": 'svg/'+svgpath+'.svg'})
+=======
+        subcategory_found["products"].append({"name": product, "svg": 'svg/'+svgpath+'.svg'})
+>>>>>>> f8a1fe1453ed8776f17c176ad20fd691cc5dfeef
 
 # 將結構化數據寫入JSON文件
 with open(output_json_file, mode='w', encoding='utf-8') as jsonfile:
